@@ -1,0 +1,49 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+type Query {
+    "Obtener todos los pronósticos"
+    pronosticos: [Pronostico!]! @all
+    
+    "Obtener un pronóstico por ID"
+    pronostico(id: ID! @eq): Pronostico @find
+}
+
+type Mutation {
+    "Crear un nuevo pronóstico"
+    crearPronostico(
+        fecha: String! @rules(apply: ["required", "max:10"])
+        cantidadEstimada: Int! @rules(apply: ["required", "integer", "min:0"])
+    ): Pronostico @create
+
+    "Actualizar un pronóstico existente"
+    actualizarPronostico(
+        id: ID! @rules(apply: ["required"])
+        fecha: String @rules(apply: ["max:10"])
+        cantidadEstimada: Int @rules(apply: ["integer", "min:0"])
+    ): Pronostico @update
+
+    "Eliminar un pronóstico"
+    eliminarPronostico(id: ID! @rules(apply: ["required"])): Pronostico @delete
+}
+
+"Modelo Pronostico"
+type Pronostico {
+    "ID único del pronóstico"
+    id: ID!
+    
+    "Fecha del pronóstico (formato DD-MM-YY)"
+    fecha: String!
+    
+    "Cantidad estimada"
+    cantidadEstimada: Int! @rename(attribute: "cantidad_estimada")
+    
+    "Fecha de creación"
+    created_at: DateTime!
+    
+    "Fecha de actualización"
+    updated_at: DateTime!
+}
